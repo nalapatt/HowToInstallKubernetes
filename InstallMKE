@@ -1,0 +1,33 @@
+https://docs.mirantis.com/docker-enterprise/v3.1/dockeree-products/mke/install-mke.html 
+this contains all the commands needed for this
+
+create a new EC2 1 master instance and 2 nodes 
+connect using ssh in the terminal
+
+if you installed docker or kubernetes remove all of it 
+sudo apt-get remove docker docker-engine docker-ce docker-ce-cli docker.io 
+sudo apt-get remove docker docker-engine docker-ce docker-ce-cli docker.io -y 
+sudo apt-get remove kubelet kubeadm kubectl -y --allow-change-held-packages 
+sudo apt-get remove -y containerd  
+
+Install MKE
+sudo apt-get update 
+sudo apt-get install apt-transport-https 
+
+sudo apt-get install ca-certificates  
+sudo apt-get install curl 
+sudo apt-get install software-properties-common -y 
+DOCKER_EE_URL=https://repos.mirantis.com 
+DOCKER_EE_VERSION=19.03 
+curl -fsSL "${DOCKER_EE_URL}/ubuntu/gpg" | sudo apt-key add - 
+sudo add-apt-repository  "deb [arch=$(dpkg --print-architecture)] $DOCKER_EE_URL/ubuntu $(lsb_release -cs) stable-$DOCKER_EE_VERSION" 
+sudo apt-get update 
+sudo apt-get install docker-ee docker-ee-cli containerd.io -y 
+
+Now install mirantis/ucp image
+sudo docker image pull mirantis/ucp:3.3.2
+sudo docker container run --rm -it --name ucp \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  mirantis/ucp:3.3.2 install \
+  --host-address <node-ip-address> \
+  --force-minimums --admin-username -adminadmin --admin-password -adminadmin
